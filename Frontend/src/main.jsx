@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 // Page Components
 import MainPage from "./Pages/Main.page.jsx";
 import HomePage from "./Pages/Home.page.jsx";
+import AddItem from "./Pages/AddItem.page.jsx";
+import ViewItemPage from "./Pages/ItemBuy.page.jsx";
 import SignupPage from "./Pages/SignUp.page.jsx";
 import LoginPage from "./Pages/Login.page.jsx";
 import UserPage from "./Pages/User.page.jsx";
@@ -17,6 +19,14 @@ import ItemDetailPage from "./Pages/ItemDetail.page.jsx";
 // import AdminLoginPage from "./Pages/AdminLogin.page.jsx";
 // import AdminDashboardPage from "./Pages/AdminDashboard.page.jsx";
 import ProtectedRoute from "./Components/ProtectedRoute.jsx";
+
+import AdminPage from "./Pages/Admin.page.jsx";
+// import SettingsPage from "./Pages/Settings.page.jsx";
+
+// Assuming you have these files in your project, uncomment these imports
+// import LoginPage from "./Pages/LoginPage.jsx"; // Corrected component name to LoginPage
+// import SignupPage from "./Pages/SignupPage.jsx"; // Corrected component name to SignupPage
+
 
 const router = createBrowserRouter([
   {
@@ -44,6 +54,25 @@ const router = createBrowserRouter([
         ]
       },
     ],
+//       {
+//         path: "/add",
+//         element: <AddItem />,
+//       },
+//       {
+//         path: "/buy",
+//         element: <ViewItemPage />,
+//       },{
+//         path: "/admin",
+//         element: <AdminPage />,
+//       },
+//      ],
+  },
+  // Uncomment and use your actual Login and Signup Pages here
+  // Ensure LoginPage and SignupPage are imported above
+  {
+    path: "/login",
+    element: <LoginPage />
+
   },
   // Standalone auth routes
   { path: "/login", element: <LoginPage /> },
