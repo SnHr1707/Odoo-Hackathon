@@ -5,10 +5,10 @@ import ReactDom from "react-dom/client";
 import App from "./App.jsx";
 // Uncomment imports for your page Pages
 import MainPage from "./Pages/Main.page.jsx"; // Corrected component name to Mainpage
-// import HomePage from "./Pages/Home.page.jsx";
+import HomePage from "./Pages/Home.page.jsx";
 import SignupPage from "./Pages/SignUp.page.jsx";
 import LoginPage from "./Pages/Login.page.jsx";
-// import MyProfilePage from "./Pages/MyProfile.page.jsx";
+import UserPage from "./Pages/User.page.jsx";
 // import SettingsPage from "./Pages/Settings.page.jsx";
 
 // Assuming you have these files in your project, uncomment these imports
@@ -25,14 +25,14 @@ const router = createBrowserRouter([
          path: "/", // This is the index route for the "/" path
          element: <MainPage />,
        },
-    //   {
-    //     path: "/home",
-    //     element: <HomePage />,
-    //   },
-    //   {
-    //     path: "/profile/:username",
-    //     element: <MyProfilePage />,
-    //   },
+      {
+        path: "/home",
+        element: <HomePage />,
+      },
+      {
+        path: "/user",
+        element: <UserPage />,
+      },
     //   {
     //     path: "/settings",
     //     element: <SettingsPage />,

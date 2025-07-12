@@ -182,7 +182,7 @@ const Navbar = ({ user, onLogout }) => {
         
         {/* LEFT: Logo */}
         <div className="flex-1 md:flex-none flex justify-start">
-            <a href="/" className="text-3xl font-bold tracking-wider text-emerald-800">SWAP</a>
+            <a href="/" className="text-3xl font-bold tracking-wider text-emerald-800">ReWear</a>
         </div>
         
         {/* CENTER: Desktop Navigation */}
