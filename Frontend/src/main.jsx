@@ -14,28 +14,28 @@ import UserPage from "./Pages/User.page.jsx";
 import AddItemPage from "./Pages/AddItem.page.jsx";
 import ItemDetailPage from "./Pages/ItemDetail.page.jsx";
 import AdminPage from "./Pages/Admin.page.jsx";
+import AdminLoginPage from "./Pages/AdminLogin.page.jsx";
 import ProtectedRoute from "./Components/ProtectedRoute.jsx";
 import RedirectIfAuth from "./Components/RedirectIfAuth.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />, // App is now the root layout component
+    element: <App />,
     children: [
       { path: "/", element: <MainPage /> },
       { path: "/home", element: <HomePage /> },
       { path: "/item/:itemId", element: <ItemDetailPage /> },
       
-      // Routes for unauthenticated users that redirect if logged in
       {
         element: <RedirectIfAuth />,
         children: [
             { path: "/login", element: <LoginPage /> },
             { path: "/signup", element: <SignupPage /> },
+            { path: "/admin/login", element: <AdminLoginPage /> },
         ]
       },
       
-      // User Protected Routes
       { 
         element: <ProtectedRoute />,
         children: [
@@ -44,7 +44,6 @@ const router = createBrowserRouter([
         ]
       },
 
-      // Admin Protected Routes
       {
         element: <ProtectedRoute adminOnly={true} />,
         children: [
@@ -58,7 +57,6 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <RouterProvider router={router} />
-    {/* ToastContainer can live outside the router */}
     <ToastContainer
       position="bottom-right"
       autoClose={3000}

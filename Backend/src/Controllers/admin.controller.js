@@ -8,7 +8,7 @@ import { ApiResponse } from '../Utils/ApiResponse.js';
 // An approved admin approves a new admin
 export const approveAdmin = asyncHandler(async (req, res) => {
     const { adminIdToApprove } = req.params;
-    const approverId = req.admin._id;
+    const approverId = req.user._id; // Changed from req.admin to req.user for consistency
 
     const adminToApprove = await Admin.findById(adminIdToApprove);
     if (!adminToApprove || adminToApprove.approved) {
@@ -17,9 +17,15 @@ export const approveAdmin = asyncHandler(async (req, res) => {
 
     adminToApprove.approved = true;
     adminToApprove.approvedBy = approverId;
-    await adminToApprove.save();
+    await adminToApprove.save({ validateBeforeSave: false });
 
     return res.status(200).json(new ApiResponse(200, adminToApprove, "Admin has been approved successfully."));
+});
+
+// Get all admins pending approval
+export const getPendingAdmins = asyncHandler(async (req, res) => {
+    const pendingAdmins = await Admin.find({ approved: false }).select('-passwordHash');
+    return res.status(200).json(new ApiResponse(200, pendingAdmins, "Pending admins fetched successfully."));
 });
 
 // Get all items pending approval
@@ -32,7 +38,7 @@ export const getPendingItems = asyncHandler(async (req, res) => {
 export const moderateItem = asyncHandler(async (req, res) => {
     const { itemId } = req.params;
     const { action, rejectionReason } = req.body; // action: 'approve' or 'reject'
-    const adminId = req.admin._id;
+    const adminId = req.user._id; // Changed from req.admin to req.user
 
     const item = await Item.findById(itemId);
     if (!item || item.status !== 'pending') {

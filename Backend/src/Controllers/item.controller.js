@@ -46,15 +46,21 @@ export const createItemListing = asyncHandler(async (req, res) => {
 
 // Get all approved items (with filtering placeholders)
 export const getAllApprovedItems = asyncHandler(async (req, res) => {
-    // This controller is now ready for future filtering enhancements
-    const { tags, category, sort } = req.query;
+    const { search, tags, category, sort } = req.query;
     
     const query = { status: 'approved' };
 
-    if (tags) query.tags = { $in: tags.split(',') };
-    if (category) query['category.main'] = category;
+    if (search) {
+        query.$text = { $search: search };
+    }
+    if (tags) {
+        query.tags = { $in: tags.split(',') };
+    }
+    if (category) {
+        query['category.main'] = category;
+    }
 
-    let sortOption = { createdAt: -1 };
+    let sortOption = { createdAt: -1 }; // Default sort: newest first
     if(sort === 'oldest') sortOption = { createdAt: 1 };
     if(sort === 'points_asc') sortOption = { pointsValue: 1 };
     if(sort === 'points_desc') sortOption = { pointsValue: -1 };
@@ -66,7 +72,6 @@ export const getAllApprovedItems = asyncHandler(async (req, res) => {
     return res.status(200).json(new ApiResponse(200, items, "Approved items fetched successfully."));
 });
 
-// *** NEW FUNCTION TO FIX THE ERROR ***
 // Get a single item by its ID
 export const getItemById = asyncHandler(async (req, res) => {
     const { itemId } = req.params;
@@ -106,15 +111,17 @@ export const redeemItem = asyncHandler(async (req, res) => {
     session.startTransaction();
 
     try {
-        await User.findByIdAndUpdate(user._id, { $inc: { points: -itemToRedeem.pointsValue } }, { session, new: true });
+        const updatedUser = await User.findByIdAndUpdate(user._id, { $inc: { points: -itemToRedeem.pointsValue } }, { session, new: true });
         await User.findByIdAndUpdate(itemToRedeem.uploader.userId, { $inc: { points: itemToRedeem.pointsValue } }, { session, new: true });
+        
         itemToRedeem.status = 'redeemed';
         await itemToRedeem.save({ session });
+        
         await Transaction.create([{ user: user._id, type: 'redeem_item', description: `Redeemed item: '${itemToRedeem.name}'`, pointsChange: -itemToRedeem.pointsValue, relatedItems: [itemToRedeem._id], relatedUsers: [itemToRedeem.uploader.userId] }], { session });
         await Transaction.create([{ user: itemToRedeem.uploader.userId, type: 'listing_bonus', description: `Your item '${itemToRedeem.name}' was redeemed by ${user.username}.`, pointsChange: itemToRedeem.pointsValue, relatedItems: [itemToRedeem._id], relatedUsers: [user._id] }], { session });
         
         await session.commitTransaction();
-        return res.status(200).json(new ApiResponse(200, {}, "Item redeemed successfully!"));
+        return res.status(200).json(new ApiResponse(200, { newPoints: updatedUser.points }, "Item redeemed successfully!"));
     } catch (error) {
         await session.abortTransaction();
         throw new ApiError(500, "Redemption failed due to a server error.", error);

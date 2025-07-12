@@ -27,4 +27,8 @@ const itemSchema = new mongoose.Schema({
   rejectionReason: { type: String },
 }, { timestamps: true });
 
+// Add a text index for searching
+itemSchema.index({ name: 'text', description: 'text', brand: 'text', tags: 'text' });
+
+
 export const Item = mongoose.model('Item', itemSchema);
