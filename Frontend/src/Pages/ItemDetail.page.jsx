@@ -18,11 +18,15 @@ function ItemDetailPage() {
 
     useEffect(() => {
         const fetchItem = async () => {
+            setLoading(true);
             try {
                 const response = await api.get(`/items/${itemId}`);
                 if (response.data && response.data.success) {
                     setItem(response.data.data);
-                    setMainImage(response.data.data.images[0]);
+                    // Set the first image as the main image initially
+                    if (response.data.data.images && response.data.data.images.length > 0) {
+                        setMainImage(response.data.data.images[0]);
+                    }
                 }
             } catch (error) {
                 toast.error("Failed to fetch item details.");
@@ -69,20 +73,10 @@ function ItemDetailPage() {
     };
 
 
-    if (loading) {
-        return <div className="text-center p-10">Loading Item...</div>;
-    }
+    if (loading) return <div className="text-center p-10">Loading Item...</div>;
+    if (!item) return <div className="text-center p-10"><h2>Item Not Found</h2></div>;
 
-    if (!item) {
-        return (
-            <div className="text-center p-10">
-                <h2 className="text-2xl font-bold">Item Not Found</h2>
-                <button onClick={() => navigate('/home')} className="mt-4 px-6 py-2 bg-emerald-600 text-white rounded-lg">Go to Home</button>
-            </div>
-        );
-    }
-
-    const isOwner = isAuthenticated && user._id === item.uploader.userId._id;
+    const isOwner = isAuthenticated && user?._id === item.uploader?.userId?._id;
 
     return (
         <div className="bg-gray-50 min-h-full p-4 md:p-8">
@@ -94,19 +88,21 @@ function ItemDetailPage() {
                     {/* Image Gallery */}
                     <div className="flex flex-col gap-4">
                         <div className="aspect-square w-full bg-gray-100 rounded-xl overflow-hidden">
-                             <img src={`http://localhost:8000${mainImage}`} alt={item.name} className="w-full h-full object-cover" />
+                             {/* MODIFIED: Display Base64 main image */}
+                             <img src={mainImage} alt={item.name} className="w-full h-full object-cover" />
                         </div>
                         <div className="grid grid-cols-5 gap-2">
                             {item.images.map((img, index) => (
                                 <div key={index} 
                                      className={`aspect-square bg-gray-100 rounded-lg overflow-hidden cursor-pointer border-2 ${mainImage === img ? 'border-emerald-500' : 'border-transparent'}`}
                                      onClick={() => setMainImage(img)}>
-                                    <img src={`http://localhost:8000${img}`} alt={`${item.name} thumbnail ${index + 1}`} className="w-full h-full object-cover" />
+                                    {/* MODIFIED: Display Base64 thumbnail image */}
+                                    <img src={img} alt={`${item.name} thumbnail ${index + 1}`} className="w-full h-full object-cover" />
                                 </div>
                             ))}
                         </div>
                     </div>
-                    {/* Item Details */}
+                    {/* ... (Rest of the component remains the same) ... */}
                     <div>
                         <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium mb-3 ${item.listingType === 'redeem' ? 'bg-emerald-100 text-emerald-700' : 'bg-orange-100 text-orange-700'}`}>
                             {item.listingType === 'redeem' ? `Redeemable for ${item.pointsValue} Points` : 'Available for Swap'}
@@ -131,7 +127,6 @@ function ItemDetailPage() {
                             )}
                         </div>
 
-                        {/* Action Buttons */}
                         <div className="mt-8">
                              {isOwner ? (
                                 <div className="p-4 bg-blue-50 text-blue-700 rounded-lg text-center">This is your item.</div>
@@ -157,7 +152,6 @@ function ItemDetailPage() {
                              )}
                         </div>
 
-                         {/* Uploader Info */}
                         <div className="mt-8 border-t pt-6">
                             <h3 className="font-semibold text-lg text-gray-800 mb-4">Uploader Information</h3>
                             <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-xl">

@@ -5,15 +5,13 @@ import api from '../api/axios';
 import { toast } from 'react-toastify';
 import { MessageCircle, Search, Tag, Calendar, ChevronDown, Award } from 'lucide-react';
 
-const DEBOUNCE_DELAY = 500; // milliseconds for search debounce
+const DEBOUNCE_DELAY = 500;
 
 function HomePage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // State for filters
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortOrder, setSortOrder] = useState('newest'); // newest, oldest, points_asc, points_desc
+  const [sortOrder, setSortOrder] = useState('newest');
   
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -29,19 +27,16 @@ function HomePage() {
       }
     } catch (error) {
       toast.error("Failed to fetch items.");
-      console.error("Fetch items error:", error);
     } finally {
       setLoading(false);
     }
   }, [searchQuery, sortOrder]);
 
-  // Debounced effect for search query
   useEffect(() => {
     const handler = setTimeout(() => {
       fetchItems();
     }, DEBOUNCE_DELAY);
 
-    // Cleanup function to cancel the timeout if component unmounts or query changes
     return () => {
       clearTimeout(handler);
     };
@@ -55,7 +50,7 @@ function HomePage() {
           <p className="text-xl text-gray-600 mt-4">Browse through items from our community. Find your next favorite piece!</p>
         </div>
 
-        {/* Filter and Search Bar */}
+        {/* ... (Filter and Search Bar remains the same) ... */}
         <div className="mb-8 p-4 bg-white rounded-xl shadow-sm border flex flex-col md:flex-row gap-4 items-center">
             <div className="relative flex-grow w-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20}/>
@@ -95,8 +90,9 @@ function HomePage() {
               <div key={item._id} className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-shadow duration-300 flex flex-col">
                 <Link to={`/item/${item._id}`} className="block">
                   <div className="relative">
+                    {/* MODIFIED: Display Base64 image directly */}
                     <img
-                      src={`http://localhost:8000${item.images[0]}`}
+                      src={item.images[0]}
                       alt={item.name}
                       className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -121,7 +117,7 @@ function HomePage() {
                   </h3>
                   <p className="text-sm text-gray-500 mb-2">{item.brand}</p>
                   
-                  <div className="mt-auto pt-4 border-t mt-4">
+                  <div className="mt-auto pt-4 border-t">
                      <Link 
                         to={`/item/${item._id}`}
                         className="w-full bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center justify-center space-x-2"

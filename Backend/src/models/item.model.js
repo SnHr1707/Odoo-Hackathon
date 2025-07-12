@@ -1,3 +1,4 @@
+// src/models/item.model.js
 import mongoose from 'mongoose';
 
 const itemSchema = new mongoose.Schema({
@@ -15,6 +16,7 @@ const itemSchema = new mongoose.Schema({
     }],
     default: []
   },
+  // This field will store an array of Base64 encoded image strings.
   images: [{ type: String, required: true }],
   uploader: {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },

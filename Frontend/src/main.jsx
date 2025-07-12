@@ -1,3 +1,4 @@
+// src/main.jsx
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ReactDOM from "react-dom/client";
@@ -15,6 +16,7 @@ import AddItemPage from "./Pages/AddItem.page.jsx";
 import ItemDetailPage from "./Pages/ItemDetail.page.jsx";
 import AdminPage from "./Pages/Admin.page.jsx";
 import AdminLoginPage from "./Pages/AdminLogin.page.jsx";
+import AdminSignupPage from "./Pages/AdminSignup.page.jsx"; // Import the new page
 import ProtectedRoute from "./Components/ProtectedRoute.jsx";
 import RedirectIfAuth from "./Components/RedirectIfAuth.jsx";
 
@@ -33,6 +35,7 @@ const router = createBrowserRouter([
             { path: "/login", element: <LoginPage /> },
             { path: "/signup", element: <SignupPage /> },
             { path: "/admin/login", element: <AdminLoginPage /> },
+            { path: "/admin/signup", element: <AdminSignupPage /> }, // Add the new route
         ]
       },
       
@@ -59,7 +62,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <RouterProvider router={router} />
     <ToastContainer
       position="bottom-right"
-      autoClose={3000}
+      autoClose={4000}
       hideProgressBar={false}
       newestOnTop={false}
       closeOnClick
@@ -67,7 +70,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       pauseOnFocusLoss
       draggable
       pauseOnHover
-      theme="light"
+      theme="colored"
     />
   </React.StrictMode>
 );

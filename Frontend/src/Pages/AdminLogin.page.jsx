@@ -1,3 +1,4 @@
+// src/Pages/AdminLogin.page.jsx
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
@@ -25,10 +26,9 @@ const AdminLoginPage = () => {
         try {
             const response = await api.post('/auth/admin/login', credentials);
             if (response.data.success) {
-                // The login function in AuthContext will handle setting state
                 login(response.data.data.user);
                 toast.success(response.data.message || "Admin login successful!");
-                navigate('/admin'); // Navigate to admin dashboard
+                navigate('/admin');
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
@@ -67,7 +67,6 @@ const AdminLoginPage = () => {
                             required
                          />
                     </div>
-
                     <div>
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                             Password
@@ -83,20 +82,15 @@ const AdminLoginPage = () => {
                             required
                         />
                     </div>
-                    
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full flex justify-center items-center bg-gray-800 text-white p-2.5 rounded-md shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:bg-gray-400"
-                    >
+                    <button type="submit" disabled={loading} className="w-full flex justify-center items-center bg-gray-800 text-white p-2.5 rounded-md shadow-sm hover:bg-black focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:bg-gray-400">
                          {loading ? 'Authenticating...' : 'Secure Login'}
                     </button>
                 </form>
 
                 <div className="text-center mt-6 text-sm text-gray-600">
-                    <p>This is a restricted area. Return to{' '}
-                        <Link to="/" className="font-medium text-emerald-600 hover:underline">
-                             Homepage
+                    <p>Need access?{' '}
+                        <Link to="/admin/signup" className="font-medium text-emerald-600 hover:underline">
+                             Register for an admin account
                         </Link>
                     </p>
                 </div>
