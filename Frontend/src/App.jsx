@@ -1,15 +1,14 @@
-/** @format */
-
+import React from 'react';
 import { Outlet } from "react-router-dom";
+import Navbar from "./Components/Navbar.jsx";
 
 function App() {
   return (
     <div className="flex flex-col h-screen">
-        {/* Navbar is part of the main layout */}
-        {/* Outlet will render the matched child route component */}
-        <div className="flex-grow overflow-auto "> {/* Added overflow-auto for scrollable content */}
+        {/* <Navbar /> */}
+        <main className="flex-grow overflow-auto pt-16"> {/* Padding top to avoid content being hidden by sticky navbar */}
           <Outlet />
-        </div>
+        </main>
     </div>
   );
 }
