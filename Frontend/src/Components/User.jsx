@@ -15,7 +15,6 @@ const getStatusColor = (status) => {
     };
     return colors[status] || 'bg-gray-100 text-gray-700';
 };
-
 const UserDashboard = ({ dashboardData, onNavigateToListing, onLogout }) => {
   const [activeTab, setActiveTab] = useState('items');
   const navigate = useNavigate();
@@ -30,7 +29,9 @@ const UserDashboard = ({ dashboardData, onNavigateToListing, onLogout }) => {
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
             {userItems.length > 0 ? userItems.map((item) => (
                 <div key={item._id} onClick={() => navigate(`/item/${item._id}`)} className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-shadow cursor-pointer">
-                    <div className="relative"><img src={`http://localhost:8000${item.images[0]}`} alt={item.name} className="w-full h-48 object-cover" />
+                    <div className="relative">
+                        {/* MODIFIED: Display Base64 image directly */}
+                        <img src={item.images[0]} alt={item.name} className="w-full h-48 object-cover" />
                         <span className={`absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(item.status)}`}>{item.status}</span>
                     </div>
                     <div className="p-4">
@@ -53,14 +54,14 @@ const UserDashboard = ({ dashboardData, onNavigateToListing, onLogout }) => {
               <div className="space-y-4">
                   {completedTransactions.length > 0 ? (
                       completedTransactions.map(tx => {
-                        // Special rendering for redeemed items (Orders)
                         if (tx.type === 'redeem_item' && tx.relatedItems.length > 0) {
                             const item = tx.relatedItems[0];
                             return (
                                 <div key={tx._id} className="p-4 bg-gray-50 rounded-xl border">
                                     <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                                         <div className="flex items-center gap-4">
-                                            <img src={`http://localhost:8000${item.images[0]}`} alt={item.name} className="w-16 h-16 object-cover rounded-md"/>
+                                            {/* MODIFIED: Display Base64 image directly */}
+                                            <img src={item.images[0]} alt={item.name} className="w-16 h-16 object-cover rounded-md"/>
                                             <div>
                                                 <p className="font-semibold text-gray-900">Redeemed: {item.name}</p>
                                                 <p className="text-sm text-gray-500">{new Date(tx.createdAt).toLocaleString()}</p>
@@ -70,7 +71,6 @@ const UserDashboard = ({ dashboardData, onNavigateToListing, onLogout }) => {
                                           {tx.pointsChange} pts
                                         </span>
                                     </div>
-                                    {/* Dummy Order Status Tracker */}
                                     <div className="mt-4 pt-4 border-t">
                                         <h4 className="text-sm font-semibold mb-3">Order Status</h4>
                                         <div className="flex items-center space-x-2 sm:space-x-4 text-xs sm:text-sm">
@@ -84,7 +84,6 @@ const UserDashboard = ({ dashboardData, onNavigateToListing, onLogout }) => {
                                 </div>
                             )
                         }
-                        // Default rendering for other transactions
                         return (
                           <div key={tx._id} className="flex justify-between items-center p-4 bg-gray-50 rounded-xl">
                               <div>
@@ -105,6 +104,7 @@ const UserDashboard = ({ dashboardData, onNavigateToListing, onLogout }) => {
       </div>
   );
   
+  // ... (renderSettings and the rest of the component remain the same) ...
   const renderSettings = () => (
       <div className="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
           <h2 className="text-xl font-semibold text-gray-900 mb-6">Profile Settings</h2>

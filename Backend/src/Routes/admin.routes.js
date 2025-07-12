@@ -9,13 +9,15 @@ import {
 import { protectAdmin } from '../middlewares/auth.middleware.js';
 
 const router = Router();
-router.use(protectAdmin); // ALL admin routes are protected
 
-// Admin Management
-router.get('/pending-admins', getPendingAdmins);
-router.patch('/approve-admin/:adminIdToApprove', approveAdmin);
+// ALL admin routes are protected and can only be accessed by an approved, logged-in admin.
+router.use(protectAdmin); 
 
-// Item Management
+// --- Admin Management ---
+router.get('/pending-admins', getPendingAdmins); // Gets list of admins awaiting approval
+router.patch('/approve-admin/:adminIdToApprove', approveAdmin); // Approves a pending admin
+
+// --- Item Management ---
 router.get('/items/pending', getPendingItems);
 router.patch('/items/moderate/:itemId', moderateItem);
 

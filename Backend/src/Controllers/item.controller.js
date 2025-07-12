@@ -1,3 +1,4 @@
+// src/controllers/item.controller.js
 import { Item } from '../models/item.model.js';
 import { User } from '../models/user.model.js';
 import { Transaction } from '../models/transaction.model.js';
@@ -6,21 +7,28 @@ import { ApiError } from '../Utils/ApiError.js';
 import { ApiResponse } from '../Utils/ApiResponse.js';
 import mongoose from 'mongoose';
 
-// User lists a new item
+// User lists a new item with Base64 images
 export const createItemListing = asyncHandler(async (req, res) => {
-    const { name, description, brand, category, tags, listingType, pointsValue } = req.body;
+    const { name, description, brand, category, tags, listingType, pointsValue, images } = req.body;
 
-    if (!req.files || req.files.length === 0) {
+    // Validate that images array is present and not empty
+    if (!images || !Array.isArray(images) || images.length === 0) {
         throw new ApiError(400, "At least one image is required.");
     }
-    const images = req.files.map(file => `/uploads/${file.filename}`);
+    // Basic validation for base64 format
+    images.forEach(img => {
+        if (!img.startsWith('data:image/')) {
+            throw new ApiError(400, "Invalid image data format. Must be a Base64 data URL.");
+        }
+    });
 
     if (!name || !description || !brand || !category || !listingType) {
         throw new ApiError(400, "Missing required fields for item listing.");
     }
     
-    const parsedCategory = JSON.parse(category);
-    const parsedTags = tags ? tags.split(',') : [];
+    // Category is now expected as a JSON object, not a string
+    const parsedCategory = typeof category === 'string' ? JSON.parse(category) : category;
+    const parsedTags = tags ? (typeof tags === 'string' ? tags.split(',') : tags) : [];
 
     if (listingType === 'redeem' && (!pointsValue || pointsValue <= 0)) {
         throw new ApiError(400, "Items listed for redemption must have a valid point value.");
@@ -32,7 +40,7 @@ export const createItemListing = asyncHandler(async (req, res) => {
         brand,
         category: parsedCategory,
         tags: parsedTags,
-        images,
+        images, // Directly save the array of base64 strings
         uploader: {
             userId: req.user._id,
             username: req.user.username
@@ -44,7 +52,7 @@ export const createItemListing = asyncHandler(async (req, res) => {
     return res.status(201).json(new ApiResponse(201, item, "Item listed successfully. Awaiting admin approval."));
 });
 
-// Get all approved items (with filtering placeholders)
+// Get all approved items (with filtering and sorting)
 export const getAllApprovedItems = asyncHandler(async (req, res) => {
     const { search, tags, category, sort } = req.query;
     
@@ -62,8 +70,8 @@ export const getAllApprovedItems = asyncHandler(async (req, res) => {
 
     let sortOption = { createdAt: -1 }; // Default sort: newest first
     if(sort === 'oldest') sortOption = { createdAt: 1 };
-    if(sort === 'points_asc') sortOption = { pointsValue: 1 };
-    if(sort === 'points_desc') sortOption = { pointsValue: -1 };
+    if(sort === 'points_asc') sortOption = { pointsValue: 1, createdAt: -1 };
+    if(sort === 'points_desc') sortOption = { pointsValue: -1, createdAt: -1 };
 
     const items = await Item.find(query)
                              .populate('uploader.userId', 'username profilePictureUrl')
@@ -80,12 +88,13 @@ export const getItemById = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid item ID format.");
     }
 
+    // When fetching a single item, we don't want to exclude images.
     const item = await Item.findById(itemId).populate('uploader.userId', 'username email profilePictureUrl');
 
     if (!item) {
         throw new ApiError(404, "Item not found.");
     }
-
+    
     return res.status(200).json(new ApiResponse(200, item, "Item fetched successfully."));
 });
 

@@ -1,3 +1,4 @@
+// src/controllers/auth.controller.js
 import { User } from '../models/user.model.js';
 import { Admin } from '../models/admin.model.js';
 import { BlacklistedToken } from '../models/blacklistedToken.model.js';
@@ -11,10 +12,10 @@ const generateTokenAndSetCookie = (res, userId, role) => {
     const token = jwt.sign({ id: userId, role }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
     res.cookie('token', token, {
-        httpOnly: true, // Prevents client-side JS from accessing the cookie
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        sameSite: 'strict', // Mitigates CSRF attacks
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 24 * 60 * 60 * 1000
     });
 
     return token;
@@ -87,14 +88,12 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 export const getCurrentUserProfile = asyncHandler(async (req, res) => {
-    // protectUser middleware already attaches the user object to the request
     return res.status(200).json(new ApiResponse(200, { user: req.user }, "User profile fetched successfully."));
 });
 
 
 // ADMIN AUTH
 export const signupAdmin = asyncHandler(async (req, res) => {
-    // This is now protected by protectAdmin, so req.user is an admin
     const { username, email, password } = req.body;
     if ([username, email, password].some((field) => !field || field.trim() === "")) {
         throw new ApiError(400, "All fields are required");
@@ -103,19 +102,28 @@ export const signupAdmin = asyncHandler(async (req, res) => {
     const adminExists = await Admin.findOne({ $or: [{ email }, { username }] });
     if (adminExists) throw new ApiError(409, "Admin with this email or username already exists");
 
-    await Admin.create({ username, email, passwordHash: password, approved: false }); // New admins always start as unapproved
+    // New admins are created with approved: false
+    const newAdmin = await Admin.create({ 
+        username, 
+        email, 
+        passwordHash: password, 
+        approved: false 
+    });
     
-    return res.status(201).json(new ApiResponse(201, {}, "Admin account created and is pending approval."));
+    return res.status(201).json(new ApiResponse(201, { admin: newAdmin }, "Admin account created and is now pending approval."));
 });
 
 export const loginAdmin = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     const admin = await Admin.findOne({ email });
+
     if (!admin || !(await admin.isPasswordCorrect(password))) {
         throw new ApiError(401, 'Invalid credentials');
     }
+    
+    // Check if the admin account is approved
     if (!admin.approved) {
-        throw new ApiError(403, "Account is pending approval from an existing administrator.");
+        throw new ApiError(403, "Your account is pending approval from an existing administrator.");
     }
 
     generateTokenAndSetCookie(res, admin._id, 'admin');
