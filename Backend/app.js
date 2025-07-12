@@ -6,6 +6,8 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import connectDB from './src/db/connect.js';
 import { errorMiddleware } from './src/Middlewares/error.middleware.js'; // Import error middleware
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Import all routes
 import authRoutes from './src/Routes/auth.routes.js';
@@ -15,6 +17,9 @@ import adminRoutes from './src/Routes/admin.routes.js';
 import swapRoutes from './src/Routes/swap.routes.js';
 
 dotenv.config({ path: './.env' }); // Correct path for dotenv
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
@@ -29,10 +34,15 @@ const io = new Server(httpServer, {
 app.set('io', io);
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    credentials: true
+}));
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
-app.use(express.static("public")); // For serving uploaded images/files
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 // Database Connection
 connectDB();

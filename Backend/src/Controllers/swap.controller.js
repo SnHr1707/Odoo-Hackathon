@@ -2,9 +2,9 @@
 import { SwapRequest } from '../models/swapRequest.model.js';
 import { Item } from '../models/item.model.js';
 import { Transaction } from '../models/transaction.model.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { ApiError } from '../utils/ApiError.js';
-import { ApiResponse } from '../utils/ApiResponse.js';
+import { asyncHandler } from '../Utils/asyncHandler.js';
+import { ApiError } from '../Utils/ApiError.js';
+import { ApiResponse } from '../Utils/ApiResponse.js';
 import mongoose from 'mongoose';
 
 // User initiates a swap request

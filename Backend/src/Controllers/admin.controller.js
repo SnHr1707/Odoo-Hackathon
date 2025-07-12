@@ -1,9 +1,9 @@
 // src/controllers/admin.controller.js
 import { Admin } from '../models/admin.model.js';
 import { Item } from '../models/item.model.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { ApiError } from '../utils/ApiError.js';
-import { ApiResponse } from '../utils/ApiResponse.js';
+import { asyncHandler } from '../Utils/asyncHandler.js';
+import { ApiError } from '../Utils/ApiError.js';
+import { ApiResponse } from '../Utils/ApiResponse.js';
 
 // An approved admin approves a new admin
 export const approveAdmin = asyncHandler(async (req, res) => {
