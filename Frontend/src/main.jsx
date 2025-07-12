@@ -47,12 +47,12 @@ const router = createBrowserRouter([
       },
 
       // Admin Protected Routes
-      {
-        element: <ProtectedRoute adminOnly={true} />,
-        children: [
-          { path: "/admin/dashboard", element: <AdminDashboardPage /> }
-        ]
-      },
+      // {
+      //   element: <ProtectedRoute adminOnly={true} />,
+      //   children: [
+      //     { path: "/admin/dashboard", element: <AdminDashboardPage /> }
+      //   ]
+      // },
     ],
 //       {
 //         path: "/add",
@@ -77,7 +77,7 @@ const router = createBrowserRouter([
   // Standalone auth routes
   { path: "/login", element: <LoginPage /> },
   { path: "/signup", element: <SignupPage /> },
-  { path: "/admin/login", element: <AdminLoginPage /> },
+  // { path: "/admin/login", element: <AdminLoginPage /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
