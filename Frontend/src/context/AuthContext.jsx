@@ -1,77 +1,72 @@
 // src/context/AuthContext.jsx
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { toast } from 'react-toastify';
 
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('token') || null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate(); // This will now work correctly
 
-    useEffect(() => {
-        const storedToken = localStorage.getItem('token');
-        const storedUser = localStorage.getItem('user');
-
-        if (storedToken && storedUser) {
-            try {
-                const parsedUser = JSON.parse(storedUser);
-                setToken(storedToken);
-                setUser(parsedUser);
+    const verifyAuth = useCallback(async () => {
+        try {
+            const response = await api.get('/auth/user/profile');
+            if (response.data.success) {
+                setUser(response.data.data.user);
                 setIsAuthenticated(true);
-                if (parsedUser.role === 'admin') {
-                    setIsAdmin(true);
-                }
-            } catch (error) {
-                console.error("Failed to parse user from localStorage", error);
-                logout();
             }
+        } catch (error) {
+            setUser(null);
+            setIsAuthenticated(false);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     }, []);
 
-    const login = (userData, userToken) => {
-        localStorage.setItem('user', JSON.stringify(userData));
-        localStorage.setItem('token', userToken);
+    useEffect(() => {
+        verifyAuth();
+    }, [verifyAuth]);
+
+    const login = (userData) => {
         setUser(userData);
-        setToken(userToken);
         setIsAuthenticated(true);
-        if (userData.role === 'admin') {
-            setIsAdmin(true);
-        }
     };
 
     const logout = async () => {
         try {
-            // It's good practice to inform the backend even if the token will expire
-            if (token) {
-                await api.post('/auth/user/logout');
-            }
-        } catch (error) {
-            console.error("Logout failed on server, clearing client session.", error);
-        } finally {
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
+            await api.post('/auth/user/logout');
             setUser(null);
-            setToken(null);
             setIsAuthenticated(false);
-            setIsAdmin(false);
+            toast.success("Logged out successfully.");
+            navigate('/login');
+        } catch (error) {
+            toast.error("Logout failed. Please try again.");
         }
     };
     
     const updateUserPoints = (newPoints) => {
         if(user){
-            const updatedUser = {...user, points: newPoints};
-            setUser(updatedUser);
-            localStorage.setItem('user', JSON.stringify(updatedUser));
+            setUser(prevUser => ({...prevUser, points: newPoints}));
         }
-    }
+    };
+
+    const value = { 
+        user, 
+        isAuthenticated, 
+        loading, 
+        login, 
+        logout, 
+        updateUserPoints,
+        isAdmin: user?.role === 'admin',
+    };
 
     return (
-        <AuthContext.Provider value={{ user, token, isAuthenticated, isAdmin, loading, login, logout, updateUserPoints }}>
-            {children}
+        <AuthContext.Provider value={value}>
+            {!loading && children}
         </AuthContext.Provider>
     );
 };
