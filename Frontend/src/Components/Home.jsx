@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // useNavigate can be used for search
+import Navbar from './Navbar';
 
 // Sub-component with hover state
 const ItemCard = ({ item, styles }) => {
@@ -229,6 +230,8 @@ function Home() {
     };
 
     return (
+        <>
+        <Navbar />
         <div style={styles.page}>
             <main>
                 <section style={styles.hero}>
@@ -274,6 +277,7 @@ function Home() {
                 <p>© 2024 ReWear. A sustainable fashion project for the Odoo-Hackathon.</p>
             </footer>
         </div>
+        </>
     );
 }
 
