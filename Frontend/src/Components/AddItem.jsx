@@ -16,9 +16,11 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
     title: '',
     description: '',
     category: '', // Added category field
+    size: '', // Added size field
+    condition: '', // Added condition field
+    tags: '', // Added tags field (as a comma-separated string for simplicity)
     method: 'points', // 'points', 'swap', 'both', or 'money' (future)
     points: '',
-    // In a real app, you'd handle image files here, using File or Blob objects
     images: [], // Array to hold image files
   });
 
@@ -31,6 +33,12 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
+
+   const handleSelectChange = (e) => {
+       const { name, value } = e.target;
+       setFormData({ ...formData, [name]: value });
+   };
+
 
   const handleMethodChange = (method) => {
     setFormData({ ...formData, method });
@@ -50,7 +58,7 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
         if (file instanceof File) {
             return URL.createObjectURL(file);
         }
-        return file; // If it's already a URL (e.g., from mock data if you added it)
+        return file; // Should not happen with current logic, but good practice
     });
 
 
@@ -75,7 +83,7 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
     e.preventDefault();
 
     // Basic validation
-    if (!formData.title || !formData.description || formData.images.length === 0) {
+    if (!formData.title || !formData.description || !formData.category || !formData.size || !formData.condition || formData.images.length === 0) {
       setSubmitError('Please fill in all required fields and upload at least one image.');
       return;
     }
@@ -102,6 +110,9 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
     // uploadData.append('title', formData.title);
     // uploadData.append('description', formData.description);
     // uploadData.append('category', formData.category);
+    // uploadData.append('size', formData.size); // Add size
+    // uploadData.append('condition', formData.condition); // Add condition
+    // uploadData.append('tags', formData.tags); // Add tags
     // uploadData.append('method', formData.method);
     // if (formData.method === 'points' || formData.method === 'both') {
     //    uploadData.append('points', formData.points);
@@ -139,12 +150,12 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
         setSubmitSuccess(true);
         console.log("Item added successfully (frontend mock)");
         // Clear form and previews after simulated success
-        setFormData({ title: '', description: '', category: '', method: 'points', points: '', images: [] });
+        setFormData({ title: '', description: '', category: '', size: '', condition: '', tags: '', method: 'points', points: '', images: [] });
         imagePreviews.forEach(url => URL.revokeObjectURL(url)); // Clean up old previews
         setImagePreviews([]);
         if (onSuccessfulAdd) {
              // Simulate passing some new item data back (basic structure)
-            onSuccessfulAdd({ id: Date.now(), ...formData, status: 'available', views: 0, likes: 0, dateUploaded: new Date().toISOString(), imageUrl: imagePreviews[0] }); // Pass first image preview as imageUrl mock
+            onSuccessfulAdd({ id: Date.now(), ...formData, status: 'available', views: 0, likes: 0, dateUploaded: new Date().toISOString(), imageUrl: imagePreviews.length > 0 ? imagePreviews[0] : null }); // Pass first image preview as imageUrl mock
         }
     } else {
         setSubmitError("Simulated item add failed.");
@@ -161,6 +172,7 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
           imagePreviews.forEach(url => URL.revokeObjectURL(url));
       };
   }, [imagePreviews]); // Re-run cleanup if imagePreviews array changes
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -202,7 +214,7 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
                      <CheckCircle className="w-16 h-16 text-emerald-500 mx-auto mb-4" />
                      <h3 className="text-xl font-semibold text-gray-900 mb-2">Item Listed Successfully!</h3>
                      {/* Display the title of the item just added if available from state */}
-                     <p className="text-gray-600 mb-6">Your item"{submitError ? '' : formData.title}" has been added to your listings.</p>
+                     <p className="text-gray-600 mb-6">Your item "{formData.title}" has been added to your listings.</p>
                      <button
                          onClick={onBack} // Option to go back
                          className="bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 transition-colors font-medium"
@@ -236,7 +248,7 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
                                      id="category"
                                      name="category"
                                      value={formData.category}
-                                     onChange={handleInputChange}
+                                     onChange={handleSelectChange} // Use handleSelectChange
                                       className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
                                      required
                                  >
@@ -250,6 +262,40 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
                                       <option value="other">Other</option>
                                  </select>
                              </div>
+                              {/* New: Size */}
+                             <div>
+                                 <label htmlFor="size" className="block text-sm font-medium text-gray-700 mb-2">Size</label>
+                                 <input
+                                     type="text"
+                                     id="size"
+                                     name="size"
+                                     value={formData.size}
+                                     onChange={handleInputChange}
+                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                     placeholder="e.g., M, US 9, 32x30"
+                                     required
+                                 />
+                             </div>
+                              {/* New: Condition */}
+                            <div>
+                                <label htmlFor="condition" className="block text-sm font-medium text-gray-700 mb-2">Condition</label>
+                                {/* Simple select dropdown for condition */}
+                                <select
+                                    id="condition"
+                                    name="condition"
+                                    value={formData.condition}
+                                    onChange={handleSelectChange} // Use handleSelectChange
+                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-white"
+                                    required
+                                >
+                                    <option value="">Select condition</option>
+                                    <option value="new-with-tags">New with Tags</option>
+                                    <option value="new-without-tags">New without Tags</option>
+                                    <option value="excellent-used-condition">Excellent Used Condition</option>
+                                    <option value="good-used-condition">Good Used Condition</option>
+                                    <option value="fair-used-condition">Fair Used Condition</option>
+                                </select>
+                            </div>
                          </div>
                          <div className="mt-4">
                              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">Description</label>
@@ -260,9 +306,23 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
                                  value={formData.description}
                                  onChange={handleInputChange}
                                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                 placeholder="Provide a detailed description of the item, including size, condition, material, etc."
+                                 placeholder="Provide a detailed description of the item, including any flaws."
                                  required
                              />
+                         </div>
+                          {/* New: Tags */}
+                         <div className="mt-4">
+                              <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">Tags (Comma-separated)</label>
+                              <input
+                                  type="text"
+                                  id="tags"
+                                  name="tags"
+                                  value={formData.tags}
+                                  onChange={handleInputChange}
+                                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                  placeholder="e.g., vintage, denim, jacket, outerwear"
+                              />
+                              <p className="mt-1 text-sm text-gray-500">Add keywords to help others find your item.</p>
                          </div>
                      </div>
 
@@ -274,22 +334,27 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
                             <div className="space-y-1 text-center">
                               <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
                               <div className="flex text-sm text-gray-600">
-                                 <label
-                                    htmlFor="file-upload"
-                                    className="relative cursor-pointer bg-white rounded-md font-medium text-emerald-600 hover:text-emerald-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500"
-                                 >
-                                    <span>Upload a file</span>
-                                    <input
-                                       id="file-upload"
-                                       name="file-upload"
-                                       type="file"
-                                       className="sr-only"
-                                       onChange={handleImageChange}
-                                       multiple
-                                       accept="image/*" // Accept image files
-                                       disabled={formData.images.length >= 5} // Disable if max images reached
-                                    />
-                                 </label>
+                                 {/* Disable file input if max images reached */}
+                                 {formData.images.length < 5 ? (
+                                     <label
+                                        htmlFor="file-upload"
+                                        className="relative cursor-pointer bg-white rounded-md font-medium text-emerald-600 hover:text-emerald-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-emerald-500"
+                                    >
+                                         <span>Upload a file</span>
+                                         <input
+                                            id="file-upload"
+                                            name="file-upload"
+                                            type="file"
+                                            className="sr-only"
+                                            onChange={handleImageChange}
+                                            multiple
+                                            accept="image/*" // Accept image files
+                                            disabled={formData.images.length >= 5} // Explicitly disable
+                                         />
+                                     </label>
+                                 ) : (
+                                     <span className="relative text-gray-500">Maximum images reached</span>
+                                 )}
                                  <p className="pl-1">or drag and drop</p>
                               </div>
                               <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p> {/* Adjust max size */}
@@ -299,18 +364,17 @@ const AddItemPage = ({ onBack, onSuccessfulAdd }) => {
                          {imagePreviews.length > 0 && (
                               <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-4">
                                  {imagePreviews.map((previewUrl, index) => (
-                                     <div key={index} className="relative w-24 h-24"> {/* Removed group class as not needed here */}
+                                     <div key={index} className="relative w-24 h-24">
                                          <img
                                              src={previewUrl}
                                              alt={`Image preview ${index + 1}`}
                                              className="w-full h-full object-cover rounded-md border border-gray-200"
                                          />
-                                         {/* Show remove button always on hover/touch, no need for group-hover */}
                                          <button
                                              type="button"
                                              onClick={() => handleRemoveImage(index)}
                                              className="absolute top-1 right-1 bg-red-500 rounded-full p-0.5 text-white hover:bg-red-600 transition-colors flex items-center justify-center"
-                                             style={{ width: '20px', height: '20px' }} // Fixed size for the remove button
+                                             style={{ width: '20px', height: '20px' }}
                                          >
                                               <XCircle className="w-4 h-4" />
                                          </button>
