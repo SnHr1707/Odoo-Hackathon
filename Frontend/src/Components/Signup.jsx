@@ -39,10 +39,13 @@ function Signup() {
         setLoading(true);
         try {
             const response = await api.post('/auth/user/signup', { username, email, password });
-            if (response.data && response.data.token) {
-                login(response.data.user, response.data.token);
+            // FIX: Check for success flag and get user data from the correct path
+            if (response.data.success) {
+                login(response.data.data.user);
                 toast.success(response.data.message || "Signup successful!");
                 navigate('/user'); // Navigate to dashboard on success
+            } else {
+                toast.error(response.data.message || "Signup failed.");
             }
         } catch (error) {
             const errorMessage = error.response?.data?.message || "Signup failed. Please try again.";

@@ -15,7 +15,6 @@ export const getUserDashboard = asyncHandler(async (req, res) => {
         userItems,
         ongoingSwaps,
         completedTransactions,
-        loginHistory // You would get this from transactions or a dedicated login collection
     ] = await Promise.all([
         User.findById(userId).select('-passwordHash'),
         Item.find({ 'uploader.userId': userId }).sort({ createdAt: -1 }),
@@ -23,28 +22,27 @@ export const getUserDashboard = asyncHandler(async (req, res) => {
             $or: [{ 'requester.userId': userId }, { 'receiver.userId': userId }],
             status: 'pending'
         }).populate('requester.itemId receiver.itemId'),
-        Transaction.find({ user: userId }).sort({ createdAt: -1 }).limit(20),
-        Transaction.find({ user: userId, type: 'daily_login_points' }).select('createdAt')
+        Transaction.find({ user: userId })
+            .populate('relatedItems') // <-- POPULATE RELATED ITEMS
+            .sort({ createdAt: -1 })
+            .limit(20),
     ]);
 
     // Process data for the dashboard view
     const itemsOverview = {
-        listed: userItems.filter(i => i.status === 'approved' || i.status === 'pending').length,
+        totalListed: userItems.length,
+        active: userItems.filter(i => i.status === 'approved').length,
+        pending: userItems.filter(i => i.status === 'pending').length,
         swapped: userItems.filter(i => i.status === 'swapped').length,
-        redeemed: userItems.filter(i => i.status === 'redeemed').length,
-        rejected: userItems.filter(i => i.status === 'rejected').length,
+        redeemedByOthers: userItems.filter(i => i.status === 'redeemed').length,
     };
-
-    // Format login history for a mini-calendar (e.g., an array of dates)
-    const loginStreakData = loginHistory.map(t => t.createdAt.toISOString().split('T')[0]);
 
     const dashboardData = {
         profile: userProfile,
         itemsOverview,
-        userItems, // The full list of items
+        userItems, 
         ongoingSwaps,
         completedTransactions,
-        loginStreakData
     };
 
     return res.status(200).json(new ApiResponse(200, dashboardData, "User dashboard data fetched successfully."));
