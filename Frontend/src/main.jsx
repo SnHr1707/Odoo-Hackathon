@@ -11,6 +11,7 @@ import ViewItemPage from "./Pages/ItemBuy.page.jsx";
 import SignupPage from "./Pages/SignUp.page.jsx";
 import LoginPage from "./Pages/Login.page.jsx";
 import UserPage from "./Pages/User.page.jsx";
+import AdminPage from "./Pages/Admin.page.jsx";
 // import SettingsPage from "./Pages/Settings.page.jsx";
 
 // Assuming you have these files in your project, uncomment these imports
@@ -42,6 +43,9 @@ const router = createBrowserRouter([
       {
         path: "/buy",
         element: <ViewItemPage />,
+      },{
+        path: "/admin",
+        element: <AdminPage />,
       },
      ],
   },

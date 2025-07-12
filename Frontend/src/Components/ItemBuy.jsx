@@ -16,8 +16,6 @@ import {
 } from 'lucide-react';
 
 // --- Mock Data ---
-// This mock data should ideally be managed in a higher-level state or context
-// in a real application, but is kept here for standalone component demonstration.
 const mockItemForActions = {
   id: 1,
   title: "Stylish Summer Dress",
@@ -67,8 +65,6 @@ const getStatusColor = (status) => {
   }
 };
 
-// This component handles displaying the item details and switching between
-// the "Redeem" and "Swap Request" interfaces.
 const ItemActionSelectorPage = ({ item = mockItemForActions, user = mockCurrentUserForActions, onBackToListings }) => {
   // State to track the selected action: 'none', 'redeem', or 'swap'
   const [selectedAction, setSelectedAction] = useState('none');
@@ -146,7 +142,7 @@ const ItemActionSelectorPage = ({ item = mockItemForActions, user = mockCurrentU
   };
   // --- End Swap Request Logic ---
 
-  // If item is not available, show a message instead of actions on the initial view
+  // If item is not available, show a message instead of actions
    if (item.status !== 'available' && selectedAction === 'none') {
        return (
             <div className="min-h-screen bg-gray-50">
@@ -205,8 +201,7 @@ const ItemActionSelectorPage = ({ item = mockItemForActions, user = mockCurrentU
          {/* Back Button (visible unless on the initial action selection view) */}
         {selectedAction !== 'none' && (
              <button
-                // Logic to go back: if successful redemption, clicking back goes to listings. Otherwise, back to action selection.
-                onClick={() => selectedAction === 'redeem' && redeemSuccess ? onBackToListings() : setSelectedAction('none')}
+                onClick={() => selectedAction === 'redeem' ? setRedeemSuccess(false) || setSelectedAction('none') : setSelectedAction('none')}
                 className="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors mb-6"
              >
                 <ArrowLeft className="w-5 h-5" />
@@ -258,7 +253,6 @@ const ItemActionSelectorPage = ({ item = mockItemForActions, user = mockCurrentU
                                     <MessageCircle className="w-5 h-5" />
                                     <span>Request Swap</span>
                                 </button>
-                                {/* Only show redeem if points are set on the item */}
                                 {item.points > 0 && (
                                     <button
                                         onClick={() => setSelectedAction('redeem')}
@@ -272,7 +266,7 @@ const ItemActionSelectorPage = ({ item = mockItemForActions, user = mockCurrentU
                                     >
                                         <Award className="w-5 h-5" />
                                         <span>Redeem for {item.points} points</span>
-                                        {!canRedeem && <span className="text-xs ml-2">(Not Enough Points)</span>}
+                                        {!canRedeem && <span className="text-xs">(Not Enough Points)</span>}
                                     </button>
                                 )}
                            </div>
@@ -547,31 +541,4 @@ const ItemActionSelectorPage = ({ item = mockItemForActions, user = mockCurrentU
   );
 };
 
-// The page component that renders the ItemActionSelectorPage
-const ViewItemPage = () => {
-    // In a real app, you would fetch the item and user data based on route params or context
-    // Using mock data for demonstration
-    const currentItem = mockItemForActions;
-    const loggedInUser = mockCurrentUserForActions;
-
-    const handleBackToListings = () => {
-        console.log("Simulating navigation back to the list of items");
-        // Implement your routing logic here (e.g., using react-router-dom)
-        // navigate('/listings');
-    };
-
-    // In a real app, you would handle actual loading states
-    // if (!currentItem || !loggedInUser) {
-    //     return <div>Loading item or user data...</div>;
-    // }
-
-    return (
-        <ItemActionSelectorPage
-            item={currentItem}
-            user={loggedInUser}
-            onBackToListings={handleBackToListings}
-        />
-    );
-};
-
-export default ViewItemPage; // Export the page component
+export default ItemActionSelectorPage;
