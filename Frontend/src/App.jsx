@@ -9,7 +9,7 @@ function App() {
         {/* Navbar is part of the main layout */}
         <Navbar />
         {/* Outlet will render the matched child route component */}
-        <div className="flex-grow overflow-auto"> {/* Added overflow-auto for scrollable content */}
+        <div className="flex-grow overflow-auto "> {/* Added overflow-auto for scrollable content */}
           <Outlet />
         </div>
     </div>
