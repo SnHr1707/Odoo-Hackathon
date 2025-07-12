@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 // Page Components
 import MainPage from "./Pages/Main.page.jsx";
-import HomePage from "./Pages/Home.page.jsx";
+import HomePage from "./Components/Home.jsx";
 import AddItem from "./Pages/AddItem.page.jsx";
 import ViewItemPage from "./Pages/ItemBuy.page.jsx";
 import SignupPage from "./Pages/SignUp.page.jsx";
@@ -34,14 +34,25 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "/", element: <MainPage /> },
-      { path: "/home", element: <HomePage /> },
       { path: "/item/:itemId", element: <ItemDetailPage /> },
+      {
+        path: "/add",
+        element: <AddItem />,
+      },
+      {
+        path: "/buy",
+        element: <ViewItemPage />,
+      },{
+        path: "/admin",
+        element: <AdminPage />,
+      },
       
       // User Protected Routes
       { 
         element: <ProtectedRoute />,
         children: [
           { path: "/user", element: <UserPage /> },
+          { path: "/home", element: <HomePage /> },
           // { path: "/add-item", element: <AddItemPage /> },
         ]
       },
@@ -54,17 +65,6 @@ const router = createBrowserRouter([
       //   ]
       // },
     ],
-//       {
-//         path: "/add",
-//         element: <AddItem />,
-//       },
-//       {
-//         path: "/buy",
-//         element: <ViewItemPage />,
-//       },{
-//         path: "/admin",
-//         element: <AdminPage />,
-//       },
 //      ],
   },
   // Uncomment and use your actual Login and Signup Pages here
