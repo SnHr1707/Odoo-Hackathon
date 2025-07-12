@@ -177,12 +177,12 @@ const Navbar = ({ user, onLogout }) => {
   };
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 font-sans bg-emerald-50/80 shadow-md backdrop-blur-md border-b border-emerald-200/50">
-      <div className="relative max-w-screen-xl mx-auto px-6 py-2 flex justify-between items-center">
+    <header className="sticky top-0 left-0 right-0 z-50 font-sans bg-white shadow-md backdrop-blur-md border-b border-emerald-200/50">
+      <div className="relative max-w-screen-xl mx-auto px-6 py-0.5 flex justify-between items-center">
         
         {/* LEFT: Logo */}
         <div className="flex-1 md:flex-none flex justify-start">
-            <a href="/" className="text-3xl font-bold tracking-wider text-emerald-800">ReWear</a>
+            <a href="/" className="text-3xl font-bold tracking-wider text-emerald-800">SWAP</a>
         </div>
         
         {/* CENTER: Desktop Navigation */}
@@ -192,7 +192,7 @@ const Navbar = ({ user, onLogout }) => {
               key={menu}
               onMouseEnter={() => setActiveMegaMenu(menu)}
               onMouseLeave={() => setActiveMegaMenu(null)}
-              className="py-4"
+              className="py-2"
             >
               <div className="relative group text-gray-700 hover:text-emerald-700 transition-colors duration-300 flex items-center gap-2 cursor-pointer rounded-md px-4 py-2 hover:bg-emerald-100/60">
                 <span className='font-medium'>{menu}</span>
@@ -206,7 +206,13 @@ const Navbar = ({ user, onLogout }) => {
         {/* RIGHT: Actions (Profile & Mobile Toggle) */}
         <div className="flex-1 md:flex-none flex justify-end items-center">
           {/* Profile Dropdown (Desktop) */}
-          <div className="hidden md:flex">
+           <div className="hidden md:flex items-center gap-4">
+             {/* Points Display */}
+            <div className="flex items-center gap-2 bg-emerald-100/60 text-emerald-800 font-medium px-3 py-2 rounded-lg text-sm">
+                <i className="fas fa-gem text-emerald-600"></i>
+                <span>{user?.points ?? 0} Points</span>
+            </div>
+
             <div className="relative">
               <button onClick={() => setProfileOpen(!isProfileOpen)} className="flex items-center gap-3 text-gray-800 font-medium transition-transform duration-300 hover:scale-105">
                 <div className="w-10 h-10 rounded-full bg-emerald-200 border-2 border-emerald-300 flex items-center justify-center">
@@ -397,6 +403,10 @@ const MobileMenu = ({ user, onLogout, closeMenu, toggleSubMenu, activeSubMenu })
                     <p className="text-sm text-gray-500 truncate">{user.email}</p>
                 </div>
             </div>
+            <a href="#points" className="flex items-center gap-4 py-3 text-base text-gray-700 hover:text-emerald-700">
+                <i className="fas fa-gem w-5 text-emerald-600"></i>
+                <span className="font-bold text-emerald-700">{user?.points ?? 0} Points</span>
+            </a>
             <a href="/profile" className="flex items-center gap-4 py-3 text-base text-gray-700 hover:text-emerald-700"><i className="fas fa-user-circle w-5"></i>My Profile</a>
             <a href="#my-swaps" className="flex items-center gap-4 py-3 text-base text-gray-700 hover:text-emerald-700"><i className="fas fa-sync-alt w-5"></i>My Swaps</a>
             <button onClick={onLogout} className="flex items-center gap-4 w-full text-left py-3 text-red-600 hover:text-red-500 font-medium text-base">

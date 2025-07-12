@@ -6,7 +6,7 @@ function App() {
   return (
     <div className="flex flex-col h-screen">
         {/* <Navbar /> */}
-        <main className="flex-grow overflow-auto pt-16"> {/* Padding top to avoid content being hidden by sticky navbar */}
+        <main className="flex-grow overflow-auto"> {/* Padding top to avoid content being hidden by sticky navbar */}
           <Outlet />
         </main>
     </div>
