@@ -6,6 +6,8 @@ import App from "./App.jsx";
 // Uncomment imports for your page Pages
 import MainPage from "./Pages/Main.page.jsx"; // Corrected component name to Mainpage
 import HomePage from "./Pages/Home.page.jsx";
+import AddItem from "./Pages/AddItem.page.jsx";
+import ViewItemPage from "./Pages/ItemBuy.page.jsx";
 import SignupPage from "./Pages/SignUp.page.jsx";
 import LoginPage from "./Pages/Login.page.jsx";
 import UserPage from "./Pages/User.page.jsx";
@@ -33,10 +35,14 @@ const router = createBrowserRouter([
         path: "/user",
         element: <UserPage />,
       },
-    //   {
-    //     path: "/settings",
-    //     element: <SettingsPage />,
-    //   },
+      {
+        path: "/add",
+        element: <AddItem />,
+      },
+      {
+        path: "/buy",
+        element: <ViewItemPage />,
+      },
      ],
   },
   // Uncomment and use your actual Login and Signup Pages here
