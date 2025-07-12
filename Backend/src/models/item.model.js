@@ -7,9 +7,14 @@ const itemSchema = new mongoose.Schema({
   category: {
     main: { type: String, required: true },
     sub: { type: String, required: true },
-    nested: { type: String },
   },
-  tags: [{ type: String, lowercase: true, trim: true }],
+  tags: {
+    type: [{
+        type: String,
+        enum: ['men', 'women', 'unisex', 'kids', 'oversized', 'vintage', 'watches', 'tapered', 'formal', 'casual', 'sports']
+    }],
+    default: []
+  },
   images: [{ type: String, required: true }],
   uploader: {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
