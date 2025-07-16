@@ -40,10 +40,22 @@ export const getUserDashboard = asyncHandler(async (req, res) => {
     const dashboardData = {
         profile: userProfile,
         itemsOverview,
-        userItems, 
+        userItems,
         ongoingSwaps,
         completedTransactions,
     };
 
     return res.status(200).json(new ApiResponse(200, dashboardData, "User dashboard data fetched successfully."));
+});
+
+// New endpoint to fetch user's approved swap items
+export const getUserSwapItems = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const userSwapItems = await Item.find({
+        'uploader.userId': userId,
+        listingType: 'swap',
+        status: 'approved' // Only allow swapping with approved items
+    }).select('_id name images listingType status'); // Select necessary fields
+
+    return res.status(200).json(new ApiResponse(200, userSwapItems, "User's approved swap items fetched successfully."));
 });

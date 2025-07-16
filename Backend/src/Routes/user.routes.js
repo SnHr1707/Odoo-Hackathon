@@ -1,6 +1,6 @@
 // src/routes/user.routes.js
 import { Router } from 'express';
-import { getUserDashboard } from '../Controllers/user.controller.js';
+import { getUserDashboard, getUserSwapItems } from '../Controllers/user.controller.js';
 import { protectUser } from '../middlewares/auth.middleware.js';
 
 const router = Router();
@@ -9,5 +9,6 @@ const router = Router();
 router.use(protectUser);
 
 router.get('/dashboard', getUserDashboard);
+router.get('/my-swap-items', getUserSwapItems); // New route
 
 export default router;
